@@ -1,0 +1,24 @@
+[build-system]
+requires = ["setuptools>=61"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "wallmatic"
+version = "0.1.0"
+description = "Simple wallpaper manager for Wayland setups"
+readme = "README.md"
+license = {text = "GPL-3.0-only"}
+requires-python = ">=3.10"
+authors = [
+    {name = "Kybereth", email = "265612351+Kybereth@users.noreply.github.com"}
+]
+
+dependencies = [
+    "typer",
+    "rich",
+    "PyYAML"
+]
+
+[project.scripts]
+wallmatic = "wallmatic.main:main"
+
