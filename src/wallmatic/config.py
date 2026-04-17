@@ -118,9 +118,13 @@ class ConfigManager:
         return conf
 
     def from_file(self) -> dict[str, Any]:
-        with open(str(self._config_file), "r") as conff:
-            data = yaml.safe_load(conff) or {}
-        return data
+        try:
+            with open(str(self._config_file), "r") as conff:
+                data = yaml.safe_load(conff) or {}
+                return data
+        except (yaml.YAMLError, OSError) as e:
+            raise ConfigError(
+                f"The configuration file is corrupted or unreadable: {e}")
 
     def save(self) -> None:
         self._config_dir.mkdir(parents=True, exist_ok=True)
@@ -148,15 +152,16 @@ class ConfigManager:
     def wallpapers_dir(self, val: pathlib.Path | str | None) -> None:
         try:
             if val is None:
-                self._wallpapers_dir = self.STD_WALL_DIR
+                dir_path = self.STD_WALL_DIR
             else:
-                val = pathlib.Path(val).expanduser().absolute()
+                dir_path = pathlib.Path(val).expanduser().absolute()
 
-            val.mkdir(parents=True, exist_ok=True)
+            dir_path.mkdir(parents=True, exist_ok=True)
 
-            if not val.is_dir():
-                raise ConfigError(f"Failed to create or find directory: {val}")
-            self._wallpapers_dir = val
+            if not dir_path.is_dir():
+                raise ConfigError(
+                    f"Failed to create or find directory: {dir_path}")
+            self._wallpapers_dir = dir_path
         except (ValueError, TypeError, OSError) as e:
             raise ConfigError(f"Invalid path: {e}")
 

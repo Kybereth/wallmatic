@@ -47,6 +47,8 @@ class Applier:
                 check=True)
 
     def apply_pywal(self, path: Path | str) -> None:
+        if not which("wal"):
+            raise DependencyMissingError("pywal not found on your system.")
         subprocess.run(
             ["wal", "-i", str(path), "-n"],
             stdout=subprocess.DEVNULL,

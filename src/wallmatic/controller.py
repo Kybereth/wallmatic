@@ -67,9 +67,9 @@ class Controller:
             if target_theme in (None, ""):
                 raise ThemeNotSetError("Theme must be specified for mood mode")
 
-            wallpaper = self.selector.rand_mood_wallpaper(theme)
+            wallpaper = self.selector.rand_mood_wallpaper(target_theme)
 
-            self.config.theme = theme
+            self.config.theme = target_theme
             self.config.mode = mode
             self._update_and_apply(wallpaper)
 
@@ -84,7 +84,7 @@ class Controller:
             if not path_img.exists():
                 raise NoValidImagesFoundError(f"Image not found: {path_img}")
             self.config.mode = mode
-            self._update_and_apply(Path(wallpaper).resolve())
+            self._update_and_apply(path_img)
 
     def next(self) -> str:
         if self.config.mode == "global":
