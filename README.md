@@ -8,7 +8,7 @@
 	- `mood`: Random wallpaper from specific theme(sub-folder). 
 	- `static`: Lock a specific image.
 - **Multi-Daemon Support:** Works with awww(swww) and hyprpaper.
-- **Pywal Integration:** Automatically updates your color scheme by invoking Pywal on the current wallpaper
+- **Color Engine Support:** Automatically updates your system colors by invoking Pywal or Wallust on the current wallpaper.
 - **Waybar Support:** Auto-reloads Waybar to apply new CSS palette
 - **CLI First:** Fully manageable via a clean Typer-based interface.
 
@@ -19,7 +19,7 @@ To use Wallmatic, you need at least one **wallpaper daemon** installed:
 
 **Optional dependencies:**
 - [pywal](https://github.com/dylanaraps/pywal) — A tool that generates a color palette from the dominant colors in an image.
-
+- [wallust](https://codeberg.org/explosion-mental/wallust) — A fast, Rust-based tool for generating color palettes from images (a modern alternative to pywal)
 ## Installation
 It is recommended to use [pipx](https://github.com/pypa/pipx) to install Wallmatic globally in an isolated environment:
 ```bash
@@ -47,8 +47,8 @@ wallmatic --help
 ## Configuration
 Wallmatic stores its configuration in `~/.config/wallmatic/config.yaml`. You can manage it via the CLI:
 ```bash
-# Enable or disable Pywal integration
-wallmatic config set pywal true
+# Set the color generation engine (options: pywal, wallust, none)
+wallmatic config set color_engine wallust
 
 # Change wallpaper daemon (default is "auto")
 wallmatic config set wallpaper_daemon swww
@@ -58,7 +58,7 @@ wallmatic config reset
 ```
 
 ## Wallpaper Directory Structure 
-For **global** and **mood** to work correctly, organize your wallpapers into subdirectories(themes):
+For **global** and **mood** to work correctly, organize your wallpapers into subdirectories (themes):
 ```
 Wallpapers/
 ├── nature/

@@ -6,6 +6,21 @@ and this project adheres to [Semantic Versioning](http://semver.org/)
 
 ## [Unreleased]
 
+## [0.2.0] - 2026-06-04
+### Added
+- Integrated `wallust` as a new alternative color palette generator.
+- Implemented Factory and Strategy design patterns for both wallpaper daemons ('WallpaperEngine')
+and color backends (`ColorEngine`)
+- Added defensive execution checks inside individual engine classes to prevent raw OS crashes.
+
+### Changed
+- Refactored `config.yaml`: replaced the old `pywal` (bool) toggle with a flexible
+`color_engine` (str) selector (accepts `none`, `pywal`, `wallust`).
+- Updated `wallmatic status` CLI output to display the active color engine instead of a boolean status.
+- Restricted `ConfigEnum` and validators to support the new modular configuration keys.
+
+### Fixed
+
 ## [0.1.1] - 2026-04-17
 ### Fixed
 - Added explicit `pywal` dependency check in `Applier` (now raises clear error if `wal` is missing)
