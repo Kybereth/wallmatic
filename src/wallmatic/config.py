@@ -12,13 +12,15 @@ class ConfigEnum(str, Enum):
     theme = "theme"
     previous_image = "previous_image"
     current_image = "current_image"
-    pywal = "pywal"
+    color_engine = "color_engine"
     auto = "auto"
     wallpaper_daemon = "wallpaper_daemon"
 
 
 class ConfigManager:
     APP_NAME = "wallmatic"
+
+    VALID_COLOR_ENGINES = {"none", "pywal", "wallust"}
 
     STD_WALL_DIR = pathlib.Path.home() / "Pictures" / "Wallpapers"
 
@@ -32,14 +34,14 @@ class ConfigManager:
         "theme": None,
         "previous_image": None,
         "current_image": None,
-        "pywal": False,
+        "color_engine": "none",
         "auto": False,
         "wallpaper_daemon": "auto"
     }
 
     PATH_KEYS = {"wallpapers_dir", "previous_image", "current_image"}
-    BOOL_KEYS = {"pywal", "auto"}
-    OTHER_KEYS = {"mode", "theme", "wallpaper_daemon"}
+    BOOL_KEYS = {"auto"}
+    OTHER_KEYS = {"mode", "theme", "wallpaper_daemon", "color_engine"}
 
     def __init__(
         self,
@@ -54,7 +56,7 @@ class ConfigManager:
         self._theme: str | None = None
         self._wallpaper_daemon: str | None = None
 
-        self._pywal: bool = False
+        self._color_engine: str | None = None
         self._auto: bool = False
 
         if config_file:
@@ -111,7 +113,7 @@ class ConfigManager:
                 str(self._current_image)
                 if self._current_image
                 else None),
-            "pywal": self._pywal,
+            "color_engine": self._color_engine,
             "auto": self._auto,
             "wallpaper_daemon": self._wallpaper_daemon
         }
@@ -220,17 +222,18 @@ class ConfigManager:
             raise ConfigError("Invalid Path")
 
     @property
-    def pywal(self) -> bool:
-        return self._pywal
+    def color_engine(self) -> str | None:
+        return self._color_engine
 
-    @pywal.setter
-    def pywal(self, val: bool) -> None:
-        if isinstance(val, bool):
-            self._pywal = val
+    @color_engine.setter
+    def color_engine(self, val: str) -> None:
+        if isinstance(val, str) and val.lower() in self.VALID_COLOR_ENGINES:
+            self._color_engine = val.lower()
         else:
+            allowed = ", ".join(f"'{e}'" for e in self.VALID_COLOR_ENGINES)
             raise ConfigError(
-                (f"Invalid value type {type(val).__name__}: "
-                 "pywal has to be bool")
+                (f"Invalid value {val}: "
+                 f"color_engine must be one of {allowed}")
             )
 
     @property
