@@ -16,10 +16,7 @@ class Controller:
         self.config.previous_image = self.config.current_image
         self.config.current_image = wallpaper
 
-        if self.config.pywal:
-            self.applier.apply_pywal(wallpaper)
-        self.applier.apply_wallpaper(wallpaper)
-        self.applier.reload_waybar()
+        self.applier.apply_all(wallpaper)
 
         self.config.save()
 

@@ -72,7 +72,7 @@ def status() -> None:
     table.add_column("Property", style="#b294bb")
     table.add_column("Value", style="#81a2be")
 
-    pywal_status = "Enabled" if config.pywal else "Disabled"
+    color_engine_status = config.color_engine.capitalize()
     theme_status = config.theme if config.theme else "Not set"
 
     if config.current_image:
@@ -83,7 +83,7 @@ def status() -> None:
     table.add_row("Wallpaper", wallpaper_status)
     table.add_row("Mode", config.mode)
     table.add_row("Theme", theme_status)
-    table.add_row("Pywal integration", pywal_status)
+    table.add_row("Color Engine", color_engine_status)
     table.add_row("Wallpaper directory",
                   path_collapse_user(config.wallpapers_dir)
                   )
