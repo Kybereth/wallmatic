@@ -20,7 +20,8 @@ config_app = typer.Typer(
 def set_config(
     attr: Annotated[
         ConfigEnum, typer.Argument(
-            help="The configuration attribute to modify(e.g. mode, pywal).")
+            help="The configuration attribute"
+                 " to modify(e.g. mode, color_engine).")
     ],
     val: Annotated[
         str, typer.Argument(help="The new value to assign to the attribute.")
@@ -29,7 +30,7 @@ def set_config(
     controller = Controller()
     controller.update_config(**{attr.value: val})
     console.print(
-        f"[bold][green_dk]Successfuly updated [/][cyan_br]{attr.value}[/].")
+        f"[bold][green_dk]Successfully updated [/][cyan_br]{attr.value}[/].")
 
 
 @config_app.command(

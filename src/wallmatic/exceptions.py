@@ -22,7 +22,7 @@ class NoValidImagesFoundError(Exception):
 
 class DirectoryNotFoundError(Exception):
     """
-    Raised when a required directory doesn't exist ot is inaccessible.
+    Raised when a required directory doesn't exist or is inaccessible.
     """
     def __init__(self, message: str, path: str | None = None):
         super().__init__(message)

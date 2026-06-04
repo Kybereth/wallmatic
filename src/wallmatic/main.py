@@ -101,9 +101,9 @@ def show_themes() -> None:
     if not themes:
         console.print("[bold][yellow_dk]No themes found[/][/]")
         console.print(
-            "[dim][maganeta_dk]Hint:[/][/] "
-            "[dim][maganeta_br]Ensure wallpaper directories"
-            "exists or verify the main"
+            "[dim][magenta_dk]Hint:[/][/] "
+            "[dim][magenta_br]Ensure wallpaper directories"
+            "exist or verify the main"
             "wallpaper directory in config[/][/]")
         return
     console.print("[bold][green_dk]Available themes:[/][/]")
