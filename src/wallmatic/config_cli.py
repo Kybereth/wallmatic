@@ -1,4 +1,6 @@
+import os
 import typer
+import subprocess
 from rich.console import Console
 from typing import Annotated
 from .controller import Controller
@@ -31,6 +33,22 @@ def set_config(
     controller.update_config(**{attr.value: val})
     console.print(
         f"[bold][green_dk]Successfully updated [/][cyan_br]{attr.value}[/].")
+
+
+@config_app.command(
+    "edit",
+    help="Open configuration file with default system editor"
+)
+def edit_config():
+    editor = os.environ.get("EDITOR", "nano")
+    config_file_path = ConfigManager.CONFIG_FILE
+    try:
+        subprocess.run([editor, str(config_file_path)], check=True)
+        console.print(
+            "[bold][green_dk]Configuration file is edited successfully.[/][/]")
+    except (subprocess.CalledProcessError, FileNotFoundError):
+        console.print(
+            "[bold][red_dk]Error:[/][/] Failed to launch the editor.")
 
 
 @config_app.command(

@@ -5,6 +5,7 @@ from typing import Callable, Any
 from rich.console import Console
 from rich.theme import Theme
 from subprocess import CalledProcessError
+from .logger import logger
 from .exceptions import NoValidImagesFoundError
 from .exceptions import DirectoryNotFoundError
 from .exceptions import ThemeNotSetError
@@ -42,10 +43,12 @@ def handle_errors(func: Callable[..., Any]) -> Callable[..., Any]:
                 DirectoryNotFoundError,
                 ThemeNotSetError,
                 ) as e:
+            logger.warning(f"User runtime warning: {e}")
             console.print(
                 f"[bold][red_dk]Error: [/][/][red_br]{e}[/]")
             raise typer.Exit(code=1)
         except ConfigError as e:
+            logger.error(f"Configuration error: {e}")
             console.print(
                 "[bold][red_dk]Configuration error: [/][/]"
                 f"[red_br]{e}[/]")
@@ -55,10 +58,12 @@ def handle_errors(func: Callable[..., Any]) -> Callable[..., Any]:
             )
             raise typer.Exit(code=1)
         except FileNotFoundError as e:
+            logger.error(f"File not found: {e.filename}")
             console.print("[bold][red_dk]Error: [/][/]"
                           f"[red_br]File not found {e.filename}[/]")
             raise typer.Exit(code=1)
         except DependencyMissingError as e:
+            logger.error(f"Dependency missing: {e}")
             console.print("[bold][red_dk]Error: [/][/]"
                           f"[red_br]{e}[/]")
             console.print(
@@ -68,11 +73,18 @@ def handle_errors(func: Callable[..., Any]) -> Callable[..., Any]:
                           )
             raise typer.Exit(code=1)
         except CalledProcessError as e:
+            logger.error(
+                f"External command '{' '.join(e.cmd)}' failed with exit code {e.returncode}")
+            if e.stderr:
+                logger.error(f"Command stderr output: \n{e.stderr.strip()}")
             console.print("[bold][red_dk]Error: [/][/] "
                           "[red_br]Command failed "
                           f"with exit code {e.returncode}.[/]"
                           )
             raise typer.Exit(code=1)
+        except Exception as e:
+            logger.exception("Unexpected internal application crash!")
+            console.print(f"[bold][red_dk]Internal Error: [/][/][red_br]{e}[/]")
     return wrapper
 
 

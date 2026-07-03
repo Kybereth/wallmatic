@@ -23,9 +23,7 @@ class ConfigManager:
     VALID_COLOR_ENGINES = {"none", "pywal", "wallust"}
 
     STD_WALL_DIR = pathlib.Path.home() / "Pictures" / "Wallpapers"
-
     CONFIG_DIR = pathlib.Path.home() / ".config" / APP_NAME
-
     CONFIG_FILE = pathlib.Path.home() / ".config" / APP_NAME / "config.yaml"
 
     STD_CONFIG = {
@@ -36,12 +34,21 @@ class ConfigManager:
         "current_image": None,
         "color_engine": "none",
         "auto": False,
-        "wallpaper_daemon": "auto"
+        "wallpaper_daemon": "auto",
+        "daemon_options": {
+            "awww": {
+                "transition-type": "grow",
+                "transition-step": 90,
+                "transition-fps": 60,
+                "transition-duration": 2
+            },
+            "hyprpaper": {}
+        }
     }
 
     PATH_KEYS = {"wallpapers_dir", "previous_image", "current_image"}
     BOOL_KEYS = {"auto"}
-    OTHER_KEYS = {"mode", "theme", "wallpaper_daemon", "color_engine"}
+    OTHER_KEYS = {"mode", "theme", "wallpaper_daemon", "color_engine", "daemon_options"}
 
     def __init__(
         self,
@@ -55,6 +62,7 @@ class ConfigManager:
         self._mode: str | None = None
         self._theme: str | None = None
         self._wallpaper_daemon: str | None = None
+        self._daemon_options: dict | None = None
 
         self._color_engine: str | None = None
         self._auto: bool = False
@@ -67,9 +75,16 @@ class ConfigManager:
             self._config_dir = self.CONFIG_DIR
 
         self._config = deepcopy(self.STD_CONFIG)
+        has_missing_keys = False
         if load and self.is_conf_file():
-            self._config.update(self.from_file())
+            file_data = self.from_file()
+            has_missing_keys = bool(
+                self.STD_CONFIG.keys() - file_data.keys())
+            self._config.update(file_data)
+
         self.from_dict()
+        if has_missing_keys:
+            self.save()
 
     def is_conf_dir(self):
         return self._config_dir.is_dir()
@@ -115,7 +130,8 @@ class ConfigManager:
                 else None),
             "color_engine": self._color_engine,
             "auto": self._auto,
-            "wallpaper_daemon": self._wallpaper_daemon
+            "wallpaper_daemon": self._wallpaper_daemon,
+            "daemon_options": self._daemon_options
         }
         return conf
 
@@ -262,3 +278,14 @@ class ConfigManager:
                 f"Invalid value type {type(val).__name__}: "
                 "wallpaper_daemon has to be str"
             )
+
+    @property
+    def daemon_options(self) -> dict:
+        return self._daemon_options
+
+    @daemon_options.setter
+    def daemon_options(self, val: dict) -> None:
+        if isinstance(val, dict):
+            self._daemon_options = val
+        else:
+            raise ConfigError("daemon_options must be a dictionary")

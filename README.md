@@ -5,21 +5,21 @@
 ## Features
 - **Three Modes:**
 	- `global`: Random wallpaper from your entire collection.
-	- `mood`: Random wallpaper from specific theme(sub-folder). 
+	- `mood`: Random wallpaper from a specific theme (sub-folder). 
 	- `static`: Lock a specific image.
-- **Multi-Daemon Support:** Works with awww(swww) and hyprpaper.
+- **Multi-Daemon Support:** Works with awww (swww) and hyprpaper.
 - **Color Engine Support:** Automatically updates your system colors by invoking Pywal or Wallust on the current wallpaper.
-- **Waybar Support:** Auto-reloads Waybar to apply new CSS palette
+- **Waybar Support:** Auto-reloads Waybar to apply new CSS palette.
 - **CLI First:** Fully manageable via a clean Typer-based interface.
 
 ## Prerequisites
 To use Wallmatic, you need at least one **wallpaper daemon** installed:
 - [awww](https://codeberg.org/LGFae/awww) (formerly `swww`) — An efficient wallpaper daemon for Wayland.
-- [hyprpaper](https://github.com/hyprwm/hyprpaper) — A simple and fast wallpaper utility for Hyprland
+- [hyprpaper](https://github.com/hyprwm/hyprpaper) — A simple and fast wallpaper utility for Hyprland.
 
 **Optional dependencies:**
 - [pywal](https://github.com/dylanaraps/pywal) — A tool that generates a color palette from the dominant colors in an image.
-- [wallust](https://codeberg.org/explosion-mental/wallust) — A fast, Rust-based tool for generating color palettes from images (a modern alternative to pywal)
+- [wallust](https://codeberg.org/explosion-mental/wallust) — A fast, Rust-based tool for generating color palettes from images (a modern alternative to pywal).
 ## Installation
 It is recommended to use [pipx](https://github.com/pypa/pipx) to install Wallmatic globally in an isolated environment:
 ```bash
@@ -51,13 +51,18 @@ Wallmatic stores its configuration in `~/.config/wallmatic/config.yaml`. You can
 wallmatic config set color_engine wallust
 
 # Change wallpaper daemon (default is "auto")
-wallmatic config set wallpaper_daemon swww
+wallmatic config set wallpaper_daemon awww
+
+# Open the raw configuration file in your default system editor ($EDITOR)
+wallmatic config edit
 
 # Reset configuration to default if something goes wrong
 wallmatic config reset
 ```
+For advanced tweaks (like awww animation speed, transitions, or FPS), use `wallmatic config edit` to modify the `daemon_options` block inside the YAML file directly.
 
-## Wallpaper Directory Structure 
+
+## Wallpaper Directory Structure
 For **global** and **mood** to work correctly, organize your wallpapers into subdirectories (themes):
 ```
 Wallpapers/

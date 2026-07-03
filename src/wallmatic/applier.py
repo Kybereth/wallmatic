@@ -11,7 +11,12 @@ class WallpaperEngine(ABC):
         pass
 
     @abstractmethod
-    def apply(self, path: Path) -> None:
+    def apply(self, path: Path, options: dict | None = None) -> None:
+        pass
+
+    @property
+    @abstractmethod
+    def supported_formats(self) -> set[str]:
         pass
 
 
@@ -29,17 +34,23 @@ class HyprpaperEngine(WallpaperEngine):
     def is_installed(self) -> bool:
         return bool(which("hyprctl"))
 
-    def apply(self, path: Path):
+    @property
+    def supported_formats(self) -> set[str]:
+        return {".jpg", ".jpeg", ".png", ".webp"}
+
+    def apply(self, path: Path, options: dict | None = None):
         subprocess.run(
             ["hyprctl", "hyprpaper", "preload", f"{path}"],
             stdout=subprocess.DEVNULL,
-            stderr=subprocess.DEVNULL,
+            stderr=subprocess.PIPE,
+            text=True,
             check=True)
 
         subprocess.run(
             ["hyprctl", "hyprpaper", "wallpaper", f",{path}"],
             stdout=subprocess.DEVNULL,
-            stderr=subprocess.DEVNULL,
+            stderr=subprocess.PIPE,
+            text=True,
             check=True)
 
 
@@ -56,13 +67,27 @@ class AwwwEngine(WallpaperEngine):
             return True
         return False
 
-    def apply(self, path: Path):
+    @property
+    def supported_formats(self) -> set[str]:
+        return {".jpg", ".jpeg", ".png", ".webp", ".gif",
+                ".bmp", ".pnm", ".tga", ".tiff"}
+
+    def apply(self, path: Path, options: dict | None = None):
         if not (self._cmd or self.is_installed()):
             raise DependencyMissingError("Neither 'awww' nor 'swww' was found")
+
+        cmd = [self._cmd, "img", str(path)]
+
+        if options:
+            for key, val in options.items():
+                if val is not None and val != "":
+                    cmd.extend([f"--{key}", str(val)])
+
         subprocess.run(
-            [self._cmd, "img", str(path)],
+            cmd,
             stdout=subprocess.DEVNULL,
-            stderr=subprocess.DEVNULL,
+            stderr=subprocess.PIPE,
+            text=True,
             check=True)
 
 
@@ -74,7 +99,8 @@ class PywalEngine(ColorEngine):
         subprocess.run(
             ["wal", "-i", str(path)],
             stdout=subprocess.DEVNULL,
-            stderr=subprocess.DEVNULL,
+            stderr=subprocess.PIPE,
+            text=True,
             check=True
         )
 
@@ -87,7 +113,8 @@ class WallustEngine(ColorEngine):
         subprocess.run(
             ["wallust", "run", str(path), "-n"],
             stdout=subprocess.DEVNULL,
-            stderr=subprocess.DEVNULL,
+            stderr=subprocess.PIPE,
+            text=True,
             check=True)
 
 
@@ -155,23 +182,26 @@ class ColorEngineFactory:
 
 
 class Applier:
-    def __init__(self, config):
+    def __init__(self, config, wallpaper_engine, color_engine):
         self.config = config
+        self.wallpaper_engine = wallpaper_engine
+        self.color_engine = color_engine
 
     def reload_waybar(self) -> None:
         subprocess.run(
             ["killall", "-SIGUSR2", "waybar"],
             stdout=subprocess.DEVNULL,
-            stderr=subprocess.DEVNULL,
+            stderr=subprocess.PIPE,
+            text=True,
             check=False)
 
     def apply_all(self, path: Path | str) -> None:
         path = Path(path)
 
-        wallpaper_engine = WallpaperEngineFactory.create(
-            self.config.wallpaper_daemon)
-        color_engine = ColorEngineFactory.create(self.config.color_engine)
+        opts = self.config.daemon_options.get(
+            self.config.wallpaper_daemon, {}
+        )
 
-        wallpaper_engine.apply(path)
-        color_engine.apply(path)
+        self.wallpaper_engine.apply(path, options=opts)
+        self.color_engine.apply(path)
         self.reload_waybar()

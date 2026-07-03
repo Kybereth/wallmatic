@@ -2,6 +2,7 @@ from pathlib import Path
 from .config import ConfigManager
 from .selector import Selector
 from .applier import Applier
+from .applier import WallpaperEngineFactory, ColorEngineFactory
 from .exceptions import NoValidImagesFoundError
 from .exceptions import ThemeNotSetError
 
@@ -9,8 +10,22 @@ from .exceptions import ThemeNotSetError
 class Controller:
     def __init__(self):
         self.config = ConfigManager()
-        self.selector = Selector(self.config)
-        self.applier = Applier(self.config)
+        self.wallpaper_engine = WallpaperEngineFactory.create(
+            self.config.wallpaper_daemon
+        )
+        self.color_engine = ColorEngineFactory.create(
+            self.config.color_engine
+        )
+
+        self.selector = Selector(
+            self.config,
+            self.wallpaper_engine.supported_formats)
+
+        self.applier = Applier(
+            self.config,
+            self.wallpaper_engine,
+            self.color_engine
+        )
 
     def _update_and_apply(self, wallpaper: str | Path) -> None:
         self.config.previous_image = self.config.current_image

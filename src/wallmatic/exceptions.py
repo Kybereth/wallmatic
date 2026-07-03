@@ -11,7 +11,7 @@ class ConfigError(Exception):
 
 class DependencyMissingError(Exception):
     """
-    Raised when a required depency is missing.
+    Raised when a required dependency is missing.
     """
 
 

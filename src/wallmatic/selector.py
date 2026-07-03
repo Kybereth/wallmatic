@@ -8,13 +8,14 @@ from .exceptions import ThemeNotSetError
 class Selector:
     """
     Provides functionality for resolving paths to folders and images.
-    Atributes:
+    Attributes:
         list_themes(root_dir: str)
         rand_theme()
         rand_mood_wallpaper(theme: str)
         rand_glob_wallpaper()
     """
-    def __init__(self, conf: ConfigManager):
+    def __init__(self, conf: ConfigManager, supported_formats: set[str]):
+        self.supported_formats = supported_formats
         self.config = conf
 
     def _theme_has_images(self, theme: str) -> bool:
@@ -22,7 +23,7 @@ class Selector:
         if not theme_dir.is_dir():
             return False
         for file in theme_dir.iterdir():
-            if file.suffix.lower() in {".jpg", ".jpeg", ".png", ".webp"}:
+            if file.suffix.lower() in self.supported_formats:
                 return True
         return False
 
@@ -56,7 +57,7 @@ class Selector:
 
         wallpapers_list = [
             str(w) for w in theme_dir.iterdir()
-            if w.suffix.lower() in {".jpg", ".jpeg", ".png", ".webp"}]
+            if w.suffix.lower() in self.supported_formats]
 
         if not wallpapers_list:
             raise NoValidImagesFoundError(
