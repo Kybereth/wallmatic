@@ -37,7 +37,7 @@ def set_config(
 
 @config_app.command(
     "edit",
-    help="Open configuration file with default system editor"
+    help="Open configuration file with default system editor."
 )
 def edit_config():
     editor = os.environ.get("EDITOR", "nano")

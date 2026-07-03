@@ -62,6 +62,12 @@ class Selector:
         if not wallpapers_list:
             raise NoValidImagesFoundError(
                 f"No valid images found in theme '{theme}'")
+        
+        if len(wallpapers_list) > 1 and self.config.current_image:
+            cur_img_str = str(self.config.current_image)
+            if cur_img_str in wallpapers_list:
+                wallpapers_list.remove(cur_img_str)
+
         return choice(wallpapers_list)
 
     def rand_glob_wallpaper(self) -> str:

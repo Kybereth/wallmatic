@@ -6,6 +6,10 @@ and this project adheres to [Semantic Versioning](http://semver.org/)
 
 ## [Unreleased]
 
+## [0.3.1] - 2026-07-03
+### Fixed
+- Prevented the random selector from picking the same wallpaper consecutively when alternative images are available in the theme.
+
 ## [0.3.0] - 2026-07-03
 ### Added
 - Logging subsystem (errors and stack traces are written to `wallmatic.log`).
