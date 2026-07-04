@@ -13,7 +13,6 @@ class ConfigEnum(str, Enum):
     previous_image = "previous_image"
     current_image = "current_image"
     color_engine = "color_engine"
-    auto = "auto"
     wallpaper_daemon = "wallpaper_daemon"
 
 
@@ -33,7 +32,6 @@ class ConfigManager:
         "previous_image": None,
         "current_image": None,
         "color_engine": "none",
-        "auto": False,
         "wallpaper_daemon": "auto",
         "daemon_options": {
             "awww": {
@@ -43,12 +41,20 @@ class ConfigManager:
                 "transition-duration": 2
             },
             "hyprpaper": {}
+        },
+        "automation": {
+            "enabled": False,
+            "trigger_type": None,
+            "interval_value": None,
+            "calendar_value": None,
+            "restore_on_boot": False
         }
     }
 
     PATH_KEYS = {"wallpapers_dir", "previous_image", "current_image"}
-    BOOL_KEYS = {"auto"}
-    OTHER_KEYS = {"mode", "theme", "wallpaper_daemon", "color_engine", "daemon_options"}
+    BOOL_KEYS = set()
+    OTHER_KEYS = {"mode", "theme", "wallpaper_daemon", "color_engine",
+                  "daemon_options", "automation"}
 
     def __init__(
         self,
@@ -65,7 +71,7 @@ class ConfigManager:
         self._daemon_options: dict | None = None
 
         self._color_engine: str | None = None
-        self._auto: bool = False
+        self._automation: dict | None = None
 
         if config_file:
             self._config_file = config_file
@@ -129,9 +135,9 @@ class ConfigManager:
                 if self._current_image
                 else None),
             "color_engine": self._color_engine,
-            "auto": self._auto,
             "wallpaper_daemon": self._wallpaper_daemon,
-            "daemon_options": self._daemon_options
+            "daemon_options": self._daemon_options,
+            "automation": self._automation
         }
         return conf
 
@@ -253,19 +259,6 @@ class ConfigManager:
             )
 
     @property
-    def auto(self) -> bool:
-        return self._auto
-
-    @auto.setter
-    def auto(self, val: bool) -> None:
-        if isinstance(val, bool):
-            self._auto = val
-        else:
-            raise ConfigError(
-                f"Invalid value type {type(val).__name__}: auto has to be bool"
-            )
-
-    @property
     def wallpaper_daemon(self) -> str:
         return self._wallpaper_daemon
 
@@ -289,3 +282,14 @@ class ConfigManager:
             self._daemon_options = val
         else:
             raise ConfigError("daemon_options must be a dictionary")
+
+    @property
+    def automation(self) -> dict:
+        return self._automation
+
+    @automation.setter
+    def automation(self, val: dict) -> None:
+        if isinstance(val, dict):
+            self._automation = val
+        else:
+            raise ConfigError("automation must be a dictionary")
