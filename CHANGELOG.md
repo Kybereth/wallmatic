@@ -6,6 +6,13 @@ and this project adheres to [Semantic Versioning](http://semver.org/)
 
 ## [Unreleased]
 
+## [0.4.0] - 2026-07-06
+### Added
+- Native systemd automation engine (`wallmatic timer` command).
+- Support for interval-based switching (e.g., `10m`, `1h`) with automatic initial kick to prevent `elapsed` lock.
+- Support for specific hour-based calendar schedules (`OnCalendar`).
+- Advanced boot options: `--restore` to return last active wallpaper and `--change-on-boot` to roll a brand new one on desktop session load.
+
 ## [0.3.1] - 2026-07-03
 ### Fixed
 - Prevented the random selector from picking the same wallpaper consecutively when alternative images are available in the theme.

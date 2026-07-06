@@ -47,7 +47,9 @@ class ConfigManager:
             "trigger_type": None,
             "interval_value": None,
             "calendar_value": None,
-            "restore_on_boot": False
+            "restore_on_boot": False,
+            "change_on_boot": False
+
         }
     }
 

@@ -3,6 +3,7 @@ from .config import ConfigManager
 from .selector import Selector
 from .applier import Applier
 from .applier import WallpaperEngineFactory, ColorEngineFactory
+from .systemd import SystemdManager
 from .exceptions import NoValidImagesFoundError
 from .exceptions import ThemeNotSetError
 
@@ -117,3 +118,33 @@ class Controller:
                 )
             self._update_and_apply(wallpaper)
             return wallpaper
+
+    def enable_automation(self,
+                          trigger_type: str,
+                          value: str,
+                          restore_on_boot: bool,
+                          change_on_boot: bool) -> None:
+        interval_val = value if trigger_type == "interval" else None
+        calendar_val = value if trigger_type == "calendar" else None
+
+        self.config.automation.update({
+            "enabled": True,
+            "trigger_type": trigger_type,
+            "interval_value": interval_val,
+            "calendar_value": calendar_val,
+            "restore_on_boot": restore_on_boot,
+            "change_on_boot": change_on_boot
+        })
+        self.config.save()
+
+        manager = SystemdManager()
+        manager.write_unit_files(self.config.automation)
+        manager.start(restore_on_boot=restore_on_boot)
+
+    def disable_automation(self) -> None:
+        manager = SystemdManager()
+        manager.stop()
+        manager.clear_unit_files()
+
+        self.config.automation.update(self.config.STD_CONFIG["automation"])
+        self.config.save()

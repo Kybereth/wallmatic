@@ -8,8 +8,9 @@
 	- `mood`: Random wallpaper from a specific theme (sub-folder). 
 	- `static`: Lock a specific image.
 - **Multi-Daemon Support:** Works with awww (swww) and hyprpaper.
+- **Automation:** Integration with native Systemd user units for background wallpaper rotation.
 - **Color Engine Support:** Automatically updates your system colors by invoking Pywal or Wallust on the current wallpaper.
-- **Waybar Support:** Auto-reloads Waybar to apply new CSS palette.
+- **Waybar Support:** Auto-reloads Waybar to apply a new CSS palette.
 - **CLI First:** Fully manageable via a clean Typer-based interface.
 
 ## Prerequisites
@@ -44,6 +45,26 @@ wallmatic status
 wallmatic --help
 ```
 
+## Automation (Timer)
+Wallmatic integrates directly with Systemd User Units to handle background automation.
+```bash
+# Enable wallpaper switching every 15 minutes (and keep wallpaper on boot)
+wallmatic timer enable --interval 15m --restore
+
+# Enable switching at specific times (e.g., 9:00 and 18:00) and roll a new wallpaper on boot
+wallmatic timer enable --hours "09,18:00" --change-on-boot
+
+# Check the current background daemon status
+wallmatic timer status
+
+# Completely disable automation and remove systemd unit files
+wallmatic timer disable
+```
+
+### Accepted Formats:
+- `--interval (-i)`: Takes standard systemd time spans, e.g., `30s` (seconds), `15m` (minutes), `2h` (hours), `1d` (days).
+- `--hours (-h)`: Takes standard systemd `OnCalendar` hour notation, e.g., `21:00` (every day at 9 PM), `06,12,18:00` (three times a day).
+
 ## Configuration
 Wallmatic stores its configuration in `~/.config/wallmatic/config.yaml`. You can manage it via the CLI:
 ```bash
@@ -77,7 +98,7 @@ Wallpapers/
 ```
 
 ## Roadmap
-- [ ] **Automated Switching:** Systemd daemon (enable/disable, interval control).
+- [x] **Automated Switching:** Systemd daemon (enable/disable, interval control).
 - [ ] **Pywalfox Support:** Sync your browser colors with your wallpaper themes.
 - [ ] **Multi-monitor Support:** Individual configuration for different monitors.
 

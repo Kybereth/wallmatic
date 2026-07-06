@@ -8,6 +8,7 @@ from enum import Enum
 from wallmatic.controller import Controller
 from wallmatic.config import ConfigManager
 from wallmatic.config_cli import config_app
+from wallmatic.timer_cli import timer_app
 from wallmatic.utils import handle_errors
 from wallmatic.utils import path_collapse_user
 from wallmatic.utils import sexy_terminal_theme
@@ -15,9 +16,9 @@ from wallmatic.utils import sexy_terminal_theme
 
 console = Console(theme=sexy_terminal_theme, color_system="truecolor")
 
-app = typer.Typer(
-    rich_markup_mode="rich")
+app = typer.Typer(rich_markup_mode="rich")
 app.add_typer(config_app, name="config")
+app.add_typer(timer_app, name="timer")
 
 
 class Mode(str, Enum):

@@ -39,6 +39,8 @@ def handle_errors(func: Callable[..., Any]) -> Callable[..., Any]:
     def wrapper(*args: Any, **kwargs: Any) -> Any:
         try:
             return func(*args, **kwargs)
+        except (typer.Exit, typer.Abort):
+            raise
         except (NoValidImagesFoundError,
                 DirectoryNotFoundError,
                 ThemeNotSetError,
