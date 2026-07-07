@@ -48,15 +48,25 @@ def enable(
         )
     ] = False,
 ):
-    if (interval is None) == (hours is None):
+    if interval is not None and hours is not None:
         console.print("[bold][red_dk]Error:[/][/] Provide either "
-                      "--interval or --hours (not both or neither)")
+                      "--interval or --hours (not both)")
         raise typer.Exit(code=1)
+
+    elif interval is None and hours is None and not boot and not restore:
+        console.print(
+            "[bold][red_dk]Error:[/][/] You must specify at least one action "
+            "(--interval, --hours, --change-on-boot, or --restore)"
+        )
+        raise typer.Exit(code=1)
+
     elif restore and boot:
         console.print("[bold][red_dk]Error:[/][/] --restore and "
                       "--change-on-boot cannot be used together")
         raise typer.Exit(code=1)
 
+    trigger_type = None
+    val = None
     if interval is not None:
         trigger_type = "interval"
         val = interval

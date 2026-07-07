@@ -39,21 +39,24 @@ WantedBy=timers.target
         return shutil.which("wallmatic")
 
     def generate_timer(self,
-                       trigger_type: str,
-                       value: str,
+                       trigger_type: str | None,
+                       value: str | None,
                        change_on_boot: bool = False
-                       ) -> str:
+                       ) -> str | None:
         lines = []
         if trigger_type == "interval":
             lines.append("OnActiveSec=1s")
             lines.append(f"OnUnitActiveSec={value}")
         elif trigger_type == "calendar":
             lines.append(f"OnCalendar=*-*-* {value}")
-        else:
+        elif trigger_type is not None:
             raise ValueError(f"Unknown trigger type: {trigger_type}")
 
         if change_on_boot:
             lines.append("OnStartupSec=10s")
+
+        if not lines:
+            return None
 
         trigger_line = "\n".join(lines)
         return self.TIMER_TEMPLATE.format(trigger_line=trigger_line)
@@ -81,7 +84,12 @@ WantedBy=timers.target
             time_val,
             automation_data["change_on_boot"]
         )
-        (self.USER_SYSTEMD_DIR / "wallmatic.timer").write_text(timer_text)
+
+        timer_path = self.USER_SYSTEMD_DIR / "wallmatic.timer"
+        if timer_text:
+            timer_path.write_text(timer_text)
+        else:
+            timer_path.unlink(missing_ok=True)
 
         restore_path = self.USER_SYSTEMD_DIR / "wallmatic-restore.service"
         if automation_data["restore_on_boot"]:
@@ -104,13 +112,15 @@ WantedBy=timers.target
             text=True,
             check=True
         )
-        subprocess.run(
-            ["systemctl", "--user", "enable", "--now", "wallmatic.timer"],
-            stdout=subprocess.DEVNULL,
-            stderr=subprocess.PIPE,
-            text=True,
-            check=True
-        )
+
+        if (self.USER_SYSTEMD_DIR / "wallmatic.timer").exists():
+            subprocess.run(
+                ["systemctl", "--user", "enable", "--now", "wallmatic.timer"],
+                stdout=subprocess.DEVNULL,
+                stderr=subprocess.PIPE,
+                text=True,
+                check=True
+            )
         if restore_on_boot:
             subprocess.run(
                 ["systemctl", "--user", "enable", "wallmatic-restore.service"],
@@ -121,13 +131,14 @@ WantedBy=timers.target
             )
 
     def stop(self) -> None:
-        subprocess.run(
-            ["systemctl", "--user", "disable", "--now", "wallmatic.timer"],
-            stdout=subprocess.DEVNULL,
-            stderr=subprocess.PIPE,
-            text=True,
-            check=True
-        )
+        if (self.USER_SYSTEMD_DIR / "wallmatic.timer").exists():
+            subprocess.run(
+                ["systemctl", "--user", "disable", "--now", "wallmatic.timer"],
+                stdout=subprocess.DEVNULL,
+                stderr=subprocess.PIPE,
+                text=True,
+                check=True
+            )
 
         if (self.USER_SYSTEMD_DIR / "wallmatic-restore.service").exists():
             subprocess.run(

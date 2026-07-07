@@ -120,8 +120,8 @@ class Controller:
             return wallpaper
 
     def enable_automation(self,
-                          trigger_type: str,
-                          value: str,
+                          trigger_type: str | None,
+                          value: str | None,
                           restore_on_boot: bool,
                           change_on_boot: bool) -> None:
         interval_val = value if trigger_type == "interval" else None

@@ -6,6 +6,10 @@ and this project adheres to [Semantic Versioning](http://semver.org/)
 
 ## [Unreleased]
 
+## [0.4.1] - 2026-07-07
+### Fixed
+- Allowed setting boot triggers without intervals
+
 ## [0.4.0] - 2026-07-06
 ### Added
 - Native systemd automation engine (`wallmatic timer` command).
